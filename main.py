@@ -119,10 +119,43 @@ def adicionar_inimigo_sem_kill():
         inimigos.append(novo_inimigo)
 
 
+def checar_colisao_inimigos(inimigo1, inimigo2):
+    # Calcula a distância entre os dois inimigos
+    distancia = ((inimigo1.x - inimigo2.x) ** 2 + (inimigo1.y - inimigo2.y) ** 2) ** 0.5
 
-# Loop principal
+    # Se a distância for menor que a soma das metades das larguras ou alturas dos inimigos, há uma colisão
+    if distancia < (inimigo1.largura // 2 + inimigo2.largura // 2):
+        return True
+    return False
+
+def tratar_colisao_inimigos(inimigo1, inimigo2):
+    # Faz os inimigos se afastarem em direções opostas
+    dx = inimigo1.x - inimigo2.x
+    dy = inimigo1.y - inimigo2.y
+    distancia = ((dx ** 2) + (dy ** 2)) ** 0.6
+
+    if distancia == 0:  # Evitar divisão por zero
+        distancia = 1
+
+    # Ajusta a posição dos inimigos para que se afastem
+    deslocamento = 5  # Quanto mais os inimigos se afastam em cada colisão
+    inimigo1.x += (dx / distancia) * deslocamento
+    inimigo1.y += (dy / distancia) * deslocamento
+    inimigo2.x -= (dx / distancia) * deslocamento
+    inimigo2.y -= (dy / distancia) * deslocamento
+
+
 rodando = True
+# Loop principal
 while rodando:
+    # Outros códigos do loop...
+
+    # Verifica colisão entre inimigos
+    for i in range(len(inimigos)):
+        for j in range(i + 1, len(inimigos)):
+            if checar_colisao_inimigos(inimigos[i], inimigos[j]):
+                tratar_colisao_inimigos(inimigos[i], inimigos[j])
+
 
     clock.tick(FPS)
     for evento in pygame.event.get():
